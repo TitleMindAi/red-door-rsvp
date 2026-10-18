@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Door RSVP - Claim Your Seat</title>
+<style>
+body { font-family: Arial, sans-serif; background: #0a0a2a; color: white; text-align: center; padding: 20px; }
+h1 { color: #ffcc00; }
+.container { max-width: 600px; margin: auto; background: #111133; padding: 30px; border-radius: 15px; }
+input, button { padding: 10px; margin: 5px; font-size: 16px; }
+button { background: #e31837; color: white; border: none; cursor: pointer; }
+#claimed { text-align: left; margin-top: 20px; }
+.admin { margin-top: 40px; border-top: 1px solid #555; padding-top: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>RED DOOR RSVP</h1>
+<h2>NFL Sunday Poker - Claim Your Seat</h2>
+<p>Sunday October 25 | Dallas | Poker starts 4 PM | Hosted by Mike & Javo</p>
+<form id="claimForm">
+<input type="text" id="name" placeholder="Your Name" required>
+<button type="submit">Claim Seat</button>
+</form>
+<div id="claimed"><h3>Seats Claimed:</h3><ul id="list"></ul></div>
+<div class="admin">
+<h3>Admin Reset (Mike)</h3>
+<input type="password" id="pw" placeholder="Password">
+<button onclick="resetList()">Reset List</button>
+<p style="font-size:12px;color:#aaa;">Default password: reddoor2026</p>
+</div>
+</div>
+<script>
+const STORAGE_KEY = 'reddoor_rsvp';
+const ADMIN_PW = 'reddoor2026';
+
+function loadList() {
+  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const ul = document.getElementById('list');
+  ul.innerHTML = data.map(item => `<li>${item.name} - ${item.time}</li>`).join('') || '<li>No seats claimed yet.</li>';
+}
+
+document.getElementById('claimForm').onsubmit = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  if (!name) return;
+  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  data.push({name, time: new Date().toLocaleString()});
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  document.getElementById('name').value = '';
+  loadList();
+  alert('Seat claimed! See you Sunday.');
+};
+
+function resetList() {
+  if (document.getElementById('pw').value === ADMIN_PW) {
+    localStorage.removeItem(STORAGE_KEY);
+    loadList();
+    alert('List reset.');
+  } else {
+    alert('Wrong password.');
+  }
+}
+
+loadList();
+</script>
+</body>
+</html>
